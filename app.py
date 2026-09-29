@@ -31,12 +31,15 @@ st.markdown(
     }
     .trophy-card {
         background-color: #fff9c4;
-        padding: 10px 15px;
+        padding: 12px 15px;
         border-radius: 8px;
         border: 1px solid #fbc02d;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         font-weight: bold;
         color: #5d4037;
+        display: flex;
+        align-items: center;
+        gap: 15px;
     }
 </style>
 """,
@@ -48,70 +51,104 @@ CLUBES_INFO = {
     "Fluminense": {
         "pais": "Brasil 🇧🇷",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Fluminense_FC_escudo.png/120px-Fluminense_FC_escudo.png",
+        "nacionais": ["Campeonato Brasileiro (Brasileirão)", "Copa do Brasil"],
+        "internacionais": ["Copa Libertadores da América", "Recopa Sul-Americana"],
     },
     "Flamengo": {
         "pais": "Brasil 🇧🇷",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Flamengo_braz_logo.svg/120px-Flamengo_braz_logo.svg.png",
+        "nacionais": ["Campeonato Brasileiro (Brasileirão)", "Copa do Brasil"],
+        "internacionais": ["Copa Libertadores da América", "Recopa Sul-Americana"],
     },
     "Palmeiras": {
         "pais": "Brasil 🇧🇷",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Palmeiras_logo.svg/120px-Palmeiras_logo.svg.png",
+        "nacionais": ["Campeonato Brasileiro (Brasileirão)", "Copa do Brasil"],
+        "internacionais": ["Copa Libertadores da América", "Recopa Sul-Americana"],
     },
     "São Paulo": {
         "pais": "Brasil 🇧🇷",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Sao_Paulo_Futebol_Clube.svg/120px-Sao_Paulo_Futebol_Clube.svg.png",
+        "nacionais": ["Campeonato Brasileiro (Brasileirão)", "Copa do Brasil"],
+        "internacionais": ["Copa Libertadores da América", "Recopa Sul-Americana"],
     },
     "Corinthians": {
         "pais": "Brasil 🇧🇷",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Sport_Club_Corinthians_Paulista.svg/120px-Sport_Club_Corinthians_Paulista.svg.png",
+        "nacionais": ["Campeonato Brasileiro (Brasileirão)", "Copa do Brasil"],
+        "internacionais": ["Copa Libertadores da América", "Recopa Sul-Americana"],
     },
     "Atlético Mineiro": {
         "pais": "Brasil 🇧🇷",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Atletico_mineiro_galo.png/120px-Atletico_mineiro_galo.png",
+        "nacionais": ["Campeonato Brasileiro (Brasileirão)", "Copa do Brasil"],
+        "internacionais": ["Copa Libertadores da América", "Recopa Sul-Americana"],
     },
     "Grêmio": {
         "pais": "Brasil 🇧🇷",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Gremio_fbpa_logo.svg/120px-Gremio_fbpa_logo.svg.png",
+        "nacionais": ["Campeonato Brasileiro (Brasileirão)", "Copa do Brasil"],
+        "internacionais": ["Copa Libertadores da América", "Recopa Sul-Americana"],
     },
     "Internacional": {
         "pais": "Brasil 🇧🇷",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Sport_Club_Internacional_logo.svg/120px-Sport_Club_Internacional_logo.svg.png",
+        "nacionais": ["Campeonato Brasileiro (Brasileirão)", "Copa do Brasil"],
+        "internacionais": ["Copa Libertadores da América", "Recopa Sul-Americana"],
     },
     "Real Madrid": {
         "pais": "Espanha 🇪🇸",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Real_Madrid_CF.svg/120px-Real_Madrid_CF.svg.png",
+        "nacionais": ["La Liga (Espanha)", "Copa do Rei"],
+        "internacionais": ["UEFA Champions League", "Mundial de Clubes da FIFA"],
     },
     "Barcelona": {
         "pais": "Espanha 🇪🇸",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/FC_Barcelona_%28crest%29.svg/120px-FC_Barcelona_%28crest%29.svg.png",
+        "nacionais": ["La Liga (Espanha)", "Copa do Rei"],
+        "internacionais": ["UEFA Champions League", "Mundial de Clubes da FIFA"],
     },
     "Manchester City": {
         "pais": "Inglaterra 🏴󠁧󠁢󠁥󠁮󠁧󠁿",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Manchester_City_FC_badge.svg/120px-Manchester_City_FC_badge.svg.png",
+        "nacionais": ["Premier League (Inglaterra)", "FA Cup (Copa da Inglaterra)"],
+        "internacionais": ["UEFA Champions League", "Mundial de Clubes da FIFA"],
     },
     "Manchester United": {
         "pais": "Inglaterra 🏴󠁧󠁢󠁥󠁮󠁧󠁿",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Manchester_United_FC_crest.svg/120px-Manchester_United_FC_crest.svg.png",
+        "nacionais": ["Premier League (Inglaterra)", "FA Cup (Copa da Inglaterra)"],
+        "internacionais": ["UEFA Champions League", "Mundial de Clubes da FIFA"],
     },
     "Liverpool": {
         "pais": "Inglaterra 🏴󠁧󠁢󠁥󠁮󠁧󠁿",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Liverpool_FC.svg/120px-Liverpool_FC.svg.png",
+        "nacionais": ["Premier League (Inglaterra)", "FA Cup (Copa da Inglaterra)"],
+        "internacionais": ["UEFA Champions League", "Mundial de Clubes da FIFA"],
     },
     "Bayern de Munique": {
         "pais": "Alemanha 🇩🇪",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/120px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png",
+        "nacionais": ["Bundesliga (Alemanha)", "DFB-Pokal (Copa da Alemanha)"],
+        "internacionais": ["UEFA Champions League", "Mundial de Clubes da FIFA"],
     },
     "Paris Saint-Germain": {
         "pais": "França 🇫🇷",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Paris_Saint-Germain_F.C..svg/120px-Paris_Saint-Germain_F.C..svg.png",
+        "nacionais": ["Ligue 1 (França)", "Copa da França"],
+        "internacionais": ["UEFA Champions League"],
     },
     "Boca Juniors": {
         "pais": "Argentina 🇦🇷",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/CABJ_logo.svg/120px-CABJ_logo.svg.png",
+        "nacionais": ["Campeonato Argentino", "Copa da Argentina"],
+        "internacionais": ["Copa Libertadores da América", "Recopa Sul-Americana"],
     },
     "River Plate": {
         "pais": "Argentina 🇦🇷",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/CA_River_Plate_logo_%282022%29.svg/120px-CA_River_Plate_logo_%282022%29.svg.png",
+        "nacionais": ["Campeonato Argentino", "Copa da Argentina"],
+        "internacionais": ["Copa Libertadores da América", "Recopa Sul-Americana"],
     },
 }
 
@@ -129,7 +166,7 @@ if "jogador" not in st.session_state or not st.session_state.jogador:
       "total_jogos": 0,
       "total_gols": 0,
       "total_assistencias": 0,
-      "lista_titulos": [],
+      "lista_titulos": [],  # Armazenará dicionários: {"nome": ..., "clube": ..., "escudo": ...}
   }
 
 if "historico_blocos" not in st.session_state:
@@ -145,7 +182,7 @@ if st.session_state.etapa == "criacao":
   st.title("⚽ Simulador de Carreira em Blocos")
   st.markdown(
       "Simule ciclos de 3 a 4 temporadas, veja seus números, conquiste títulos"
-      " e decida seu destino no mercado!"
+      " com escudos personalizados e decida seu destino no mercado!"
   )
   st.markdown("---")
 
@@ -195,6 +232,8 @@ elif st.session_state.etapa == "simulacao":
       {
           "pais": "Desconhecido",
           "escudo": "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg",
+          "nacionais": ["Liga Nacional", "Copa Nacional"],
+          "internacionais": ["Competição Continental"],
       },
   )
 
@@ -231,14 +270,7 @@ elif st.session_state.etapa == "simulacao":
     jogos_bloco = 0
     gols_bloco = 0
     assists_bloco = 0
-    titulos_bloco = []
-
-    opcoes_titulos = [
-        "Campeonato Nacional",
-        "Copa Nacional",
-        "Supercopa",
-        "Libertadores / Champions League",
-    ]
+    titulos_bloco_nomes = []
 
     for t in range(qtd_temporadas):
       if "Centroavante" in j["posicao"]:
@@ -262,6 +294,7 @@ elif st.session_state.etapa == "simulacao":
       gols_bloco += g_temp
       assists_bloco += a_temp
 
+      # Chance de ganhar títulos específicos do país e internacionais do clube
       if (
           clube_atual
           in [
@@ -272,20 +305,26 @@ elif st.session_state.etapa == "simulacao":
               "Flamengo",
               "Palmeiras",
           ]
-          and random.random() < 0.65
+          and random.random() < 0.60
       ):
-        conquista = random.choice(opcoes_titulos)
-        titulos_bloco.append(conquista)
+        conquista = random.choice(info["nacionais"] + info["internacionais"])
+        titulos_bloco_nomes.append(conquista)
       elif random.random() < 0.35:
-        conquista = random.choice(
-            ["Campeonato Estadual / Regional", "Copa Nacional"]
-        )
-        titulos_bloco.append(conquista)
+        conquista = random.choice(info["nacionais"])
+        titulos_bloco_nomes.append(conquista)
 
     j["total_jogos"] += jogos_bloco
     j["total_gols"] += gols_bloco
     j["total_assistencias"] += assists_bloco
-    j["lista_titulos"].extend(titulos_bloco)
+    
+    # Salva cada título junto com o clube e o escudo da época
+    for tit in titulos_bloco_nomes:
+      j["lista_titulos"].append({
+          "nome": tit,
+          "clube": clube_atual,
+          "escudo": info["escudo"]
+      })
+
     j["idade"] += qtd_temporadas
 
     st.session_state.historico_blocos.insert(
@@ -297,13 +336,13 @@ elif st.session_state.etapa == "simulacao":
             "jogos": jogos_bloco,
             "gols": gols_bloco,
             "assists": assists_bloco,
-            "titulos": titulos_bloco,
+            "titulos": titulos_bloco_nomes,
         },
     )
 
     j["bloco_atual"] += 1
 
-    # Sorteio super aleatório de 2 propostas entre todos os outros clubes disponíveis
+    # Sorteio super aleatório de 2 propostas entre todos os outros clubes
     outros_times = [c for c in CLUBES_INFO.keys() if c != j["clube"]]
     st.session_state.propostas_atuais = random.sample(outros_times, 2)
 
@@ -376,9 +415,14 @@ elif st.session_state.etapa == "fim":
       f"{j['nome']} pendurou as chuteiras aos {j['idade']} anos de idade!"
   )
 
+  # Agrupa os títulos contando a quantidade e mantendo a referência do escudo/clube
   contagem_titulos = {}
-  for tit in j["lista_titulos"]:
-    contagem_titulos[tit] = contagem_titulos.get(tit, 0) + 1
+  for item in j["lista_titulos"]:
+    nome_t = item["nome"]
+    escudo_t = item["escudo"]
+    if nome_t not in contagem_titulos:
+      contagem_titulos[nome_t] = {"qtd": 0, "escudo": escudo_t}
+    contagem_titulos[nome_t]["qtd"] += 1
 
   st.markdown(
       f"""
@@ -392,9 +436,14 @@ elif st.session_state.etapa == "fim":
 
   st.markdown("### 🥇 Galeria de Títulos Conquistados")
   if contagem_titulos:
-    for t, qtd in contagem_titulos.items():
+    for t, dados in contagem_titulos.items():
       st.markdown(
-          f"<div class='trophy-card'>🏆 {qtd}x - {t}</div>",
+          f"""
+            <div class="trophy-card">
+                <img src="{dados['escudo']}" width="35" style="margin-right: 10px;">
+                <span>🏆 {dados['qtd']}x - {t}</span>
+            </div>
+            """,
           unsafe_allow_html=True,
       )
   else:
