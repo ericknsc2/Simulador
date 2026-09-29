@@ -29,12 +29,21 @@ st.markdown(
         border-left: 5px solid #1f77b4;
         margin-bottom: 15px;
     }
+    .trophy-card {
+        background-color: #fff9c4;
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: 1px solid #fbc02d;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #5d4037;
+    }
 </style>
 """,
     unsafe_allow_html=True,
 )
 
-# --- MAPA DE ESCUDOS / BANDEIRAS PARA OS CLUBES ---
+# --- MAPA COMPLETO DE ESCUDOS E CLUBES ---
 CLUBES_INFO = {
     "Fluminense": {
         "pais": "Brasil 🇧🇷",
@@ -52,17 +61,57 @@ CLUBES_INFO = {
         "pais": "Brasil 🇧🇷",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Sao_Paulo_Futebol_Clube.svg/120px-Sao_Paulo_Futebol_Clube.svg.png",
     },
+    "Corinthians": {
+        "pais": "Brasil 🇧🇷",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Sport_Club_Corinthians_Paulista.svg/120px-Sport_Club_Corinthians_Paulista.svg.png",
+    },
+    "Atlético Mineiro": {
+        "pais": "Brasil 🇧🇷",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Atletico_mineiro_galo.png/120px-Atletico_mineiro_galo.png",
+    },
+    "Grêmio": {
+        "pais": "Brasil 🇧🇷",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Gremio_fbpa_logo.svg/120px-Gremio_fbpa_logo.svg.png",
+    },
+    "Internacional": {
+        "pais": "Brasil 🇧🇷",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Sport_Club_Internacional_logo.svg/120px-Sport_Club_Internacional_logo.svg.png",
+    },
     "Real Madrid": {
         "pais": "Espanha 🇪🇸",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Real_Madrid_CF.svg/120px-Real_Madrid_CF.svg.png",
+    },
+    "Barcelona": {
+        "pais": "Espanha 🇪🇸",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/FC_Barcelona_%28crest%29.svg/120px-FC_Barcelona_%28crest%29.svg.png",
     },
     "Manchester City": {
         "pais": "Inglaterra 🏴󠁧󠁢󠁥󠁮󠁧󠁿",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Manchester_City_FC_badge.svg/120px-Manchester_City_FC_badge.svg.png",
     },
+    "Manchester United": {
+        "pais": "Inglaterra 🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Manchester_United_FC_crest.svg/120px-Manchester_United_FC_crest.svg.png",
+    },
+    "Liverpool": {
+        "pais": "Inglaterra 🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Liverpool_FC.svg/120px-Liverpool_FC.svg.png",
+    },
     "Bayern de Munique": {
         "pais": "Alemanha 🇩🇪",
         "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/120px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png",
+    },
+    "Paris Saint-Germain": {
+        "pais": "França 🇫🇷",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Paris_Saint-Germain_F.C..svg/120px-Paris_Saint-Germain_F.C..svg.png",
+    },
+    "Boca Juniors": {
+        "pais": "Argentina 🇦🇷",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/CABJ_logo.svg/120px-CABJ_logo.svg.png",
+    },
+    "River Plate": {
+        "pais": "Argentina 🇦🇷",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/CA_River_Plate_logo_%282022%29.svg/120px-CA_River_Plate_logo_%282022%29.svg.png",
     },
 }
 
@@ -143,7 +192,10 @@ elif st.session_state.etapa == "simulacao":
   clube_atual = j["clube"]
   info = CLUBES_INFO.get(
       clube_atual,
-      {"pais": "Desconhecido", "escudo": "https://via.placeholder.com/120"},
+      {
+          "pais": "Desconhecido",
+          "escudo": "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg",
+      },
   )
 
   col_img, col_txt = st.columns([1, 4])
@@ -212,7 +264,14 @@ elif st.session_state.etapa == "simulacao":
 
       if (
           clube_atual
-          in ["Real Madrid", "Manchester City", "Bayern de Munique", "Flamengo"]
+          in [
+              "Real Madrid",
+              "Barcelona",
+              "Manchester City",
+              "Bayern de Munique",
+              "Flamengo",
+              "Palmeiras",
+          ]
           and random.random() < 0.65
       ):
         conquista = random.choice(opcoes_titulos)
@@ -244,7 +303,7 @@ elif st.session_state.etapa == "simulacao":
 
     j["bloco_atual"] += 1
 
-    # Prepara as propostas para a tela seguinte
+    # Sorteio super aleatório de 2 propostas entre todos os outros clubes disponíveis
     outros_times = [c for c in CLUBES_INFO.keys() if c != j["clube"]]
     st.session_state.propostas_atuais = random.sample(outros_times, 2)
 
@@ -302,7 +361,7 @@ elif st.session_state.etapa == "transferencia":
       if "Continuar" not in escolha_usuario:
         novo_clube = escolha_usuario.replace("Aceitar proposta do ", "").strip()
         j["clube"] = novo_clube
-      
+
       st.session_state.etapa = "simulacao"
       st.rerun()
 
@@ -321,13 +380,6 @@ elif st.session_state.etapa == "fim":
   for tit in j["lista_titulos"]:
     contagem_titulos[tit] = contagem_titulos.get(tit, 0) + 1
 
-  texto_titulos_formatado = ""
-  if contagem_titulos:
-    for t, qtd in contagem_titulos.items():
-      texto_titulos_formatado += f"* **{qtd}x** {t}\n"
-  else:
-    texto_titulos_formatado = "* Nenhum título de expressão conquistado.\n"
-
   st.markdown(
       f"""
     ### 📊 Resumo Definitivo da Carreira
@@ -335,20 +387,27 @@ elif st.session_state.etapa == "fim":
     * **Gols Marcados:** {j['total_gols']}
     * **Assistências:** {j['total_assistencias']}
     * **Participações em Gols:** {j['total_gols'] + j['total_assistencias']}
-
-    ### 🥇 Galeria de Títulos Conquistados ({len(j['lista_titulos'])} no total):
-    {texto_titulos_formatado}
     """
   )
 
+  st.markdown("### 🥇 Galeria de Títulos Conquistados")
+  if contagem_titulos:
+    for t, qtd in contagem_titulos.items():
+      st.markdown(
+          f"<div class='trophy-card'>🏆 {qtd}x - {t}</div>",
+          unsafe_allow_html=True,
+      )
+  else:
+    st.markdown(
+        "<div class='trophy-card'>Nenhum título de expressão conquistado na"
+        " carreira.</div>",
+        unsafe_allow_html=True,
+    )
+
+  st.markdown("<br>", unsafe_allow_html=True)
   if st.button("🔄 Iniciar Nova Carreira"):
     st.session_state.etapa = "criacao"
     st.session_state.jogador = {}
     st.session_state.historico_blocos = []
     st.session_state.propostas_atuais = []
-    st.rerun()
-  if st.button("🔄 Iniciar Nova Carreira"):
-    st.session_state.etapa = "criacao"
-    st.session_state.jogador = {}
-    st.session_state.historico_blocos = []
     st.rerun()
