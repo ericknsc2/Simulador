@@ -2,12 +2,12 @@ import random
 import streamlit as st
 
 st.set_page_config(
-    page_title="Simulador de Estatísticas - Carreira",
+    page_title="Simulador de Carreira - Estatísticas",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
 
-# --- ESTILIZAÇÃO CSS ---
+# --- ESTILIZAÇÃO VISUAL ---
 st.markdown(
     """
 <style>
@@ -16,17 +16,17 @@ st.markdown(
         border-radius: 8px;
         font-weight: bold;
         height: 3em;
-        background-color: #2e7d32;
+        background-color: #1f77b4;
         color: white;
     }
     .stButton>button:hover {
-        background-color: #1b5e20;
+        background-color: #135d8a;
     }
     .stats-box {
-        background-color: #f1f8e9;
+        background-color: #f0f2f6;
         padding: 15px;
         border-radius: 10px;
-        border-left: 5px solid #2e7d32;
+        border-left: 5px solid #1f77b4;
         margin-bottom: 15px;
     }
 </style>
@@ -34,7 +34,39 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- INICIALIZAÇÃO SEGURA DO ESTADO ---
+# --- MAPA DE ESCUDOS / BANDEIRAS PARA OS CLUBES ---
+CLUBES_INFO = {
+    "Fluminense": {
+        "pais": "Brasil 🇧🇷",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Fluminense_FC_escudo.png/120px-Fluminense_FC_escudo.png",
+    },
+    "Flamengo": {
+        "pais": "Brasil 🇧🇷",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Flamengo_braz_logo.svg/120px-Flamengo_braz_logo.svg.png",
+    },
+    "Palmeiras": {
+        "pais": "Brasil 🇧🇷",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Palmeiras_logo.svg/120px-Palmeiras_logo.svg.png",
+    },
+    "São Paulo": {
+        "pais": "Brasil 🇧🇷",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Sao_Paulo_Futebol_Clube.svg/120px-Sao_Paulo_Futebol_Clube.svg.png",
+    },
+    "Real Madrid": {
+        "pais": "Espanha 🇪🇸",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Real_Madrid_CF.svg/120px-Real_Madrid_CF.svg.png",
+    },
+    "Manchester City": {
+        "pais": "Inglaterra 🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Manchester_City_FC_badge.svg/120px-Manchester_City_FC_badge.svg.png",
+    },
+    "Bayern de Munique": {
+        "pais": "Alemanha 🇩🇪",
+        "escudo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/120px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png",
+    },
+}
+
+# --- INICIALIZAÇÃO DO ESTADO ---
 if "etapa" not in st.session_state:
   st.session_state.etapa = "criacao"
 
@@ -42,40 +74,30 @@ if "jogador" not in st.session_state or not st.session_state.jogador:
   st.session_state.jogador = {
       "nome": "Erick",
       "posicao": "Centroavante (Atacante)",
-      "clube": "Fluminense (Brasil)",
+      "clube": "Fluminense",
       "idade": 18,
-      "tempor_atual": 1,
+      "bloco_atual": 1,
       "total_jogos": 0,
       "total_gols": 0,
       "total_assistencias": 0,
-      "total_titulos": 0,
+      "lista_titulos": [],
   }
 
-if "historico" not in st.session_state:
-  st.session_state.historico = []
-
-CLUBES = [
-    "Fluminense (Brasil)",
-    "Flamengo (Brasil)",
-    "Palmeiras (Brasil)",
-    "São Paulo (Brasil)",
-    "Real Madrid (Espanha)",
-    "Manchester City (Inglaterra)",
-    "Bayern de Munique (Alemanha)",
-]
+if "historico_blocos" not in st.session_state:
+  st.session_state.historico_blocos = []
 
 # ==========================================
 # TELA 1: CRIAÇÃO DO JOGADOR
 # ==========================================
 if st.session_state.etapa == "criacao":
-  st.title("⚽ Simulador de Carreira e Estatísticas")
+  st.title("⚽ Simulador de Carreira em Blocos")
   st.markdown(
-      "Acompanhe cada gol, assistência, partida e título da sua trajetória"
-      " profissional até a aposentadoria!"
+      "Simule ciclos de 3 a 4 temporadas, veja seus números, conquiste títulos"
+      " e decida seu destino no mercado!"
   )
   st.markdown("---")
 
-  with st.form("form_stats"):
+  with st.form("form_criacao"):
     nome = st.text_input("Nome do Jogador:", value="Erick")
     posicao = st.selectbox(
         "Posição:",
@@ -87,9 +109,9 @@ if st.session_state.etapa == "criacao":
             "Zagueiro / Lateral",
         ],
     )
-    clube_atual = st.selectbox("Clube de Estreia:", CLUBES)
+    clube_inicial = st.selectbox("Clube de Estreia:", list(CLUBES_INFO.keys()))
 
-    enviar = st.form_submit_button("🎯 Iniciar Trajetória")
+    enviar = st.form_submit_button("🚀 Iniciar Trajetória")
 
     if enviar:
       if not nome.strip():
@@ -98,154 +120,242 @@ if st.session_state.etapa == "criacao":
         st.session_state.jogador = {
             "nome": nome,
             "posicao": posicao,
-            "clube": clube_atual,
+            "clube": clube_inicial,
             "idade": 18,
-            "tempor_atual": 1,
+            "bloco_atual": 1,
             "total_jogos": 0,
             "total_gols": 0,
             "total_assistencias": 0,
-            "total_titulos": 0,
+            "lista_titulos": [],
         }
-        st.session_state.historico = []
+        st.session_state.historico_blocos = []
         st.session_state.etapa = "simulacao"
         st.rerun()
 
 # ==========================================
-# TELA 2: PAINEL DE SIMULAÇÃO POR TEMPORADA
+# TELA 2: SIMULAÇÃO DE BLOCO (3 a 4 Temporadas)
 # ==========================================
 elif st.session_state.etapa == "simulacao":
   j = st.session_state.jogador
-
-  st.title(f"📊 Carreira de {j['nome']}")
-  st.markdown(
-      f"**Posição:** {j['posicao']} &nbsp;|&nbsp; **Clube Atual:** {j['clube']}"
-      f" &nbsp;|&nbsp; **Idade:** {j['idade']} anos"
+  clube_atual = j["clube"]
+  info = CLUBES_INFO.get(
+      clube_atual,
+      {"pais": "Desconhecido", "escudo": "https://via.placeholder.com/120"},
   )
 
-  # Totais da Carreira
+  # Cabeçalho com Escudo
+  col_img, col_txt = st.columns([1, 4])
+  with col_img:
+    st.image(info["escudo"], width=90)
+  with col_txt:
+    st.title(f"{j['nome']}")
+    st.markdown(
+        f"**Posição:** {j['posicao']} &nbsp;|&nbsp; **Clube:** {clube_atual}"
+        f" ({info['pais']}) &nbsp;|&nbsp; **Idade:** {j['idade']} anos"
+    )
+
+  # Painel de Estatísticas Acumuladas
   st.markdown("<div class='stats-box'>", unsafe_allow_html=True)
-  st.markdown("### 🏆 Totais na Carreira")
+  st.markdown("### 📊 Totais na Carreira Até o Momento")
   c1, c2, c3, c4 = st.columns(4)
   c1.metric("Partidas", j["total_jogos"])
   c2.metric("Gols", j["total_gols"])
   c3.metric("Assistências", j["total_assistencias"])
-  c4.metric("Títulos", j["total_titulos"])
+  c4.metric("Títulos", len(j["lista_titulos"]))
   st.markdown("</div>", unsafe_allow_html=True)
 
-  st.subheader(f"📅 Simular Temporada {j['tempor_atual']}/15")
-
-  col_a, col_b = st.columns(2)
-  com_lesao = col_a.checkbox(
-      "Enfrentar lesão leve na temporada?",
-      value=False,
-      help="Reduz um pouco o número de jogos disputados.",
+  st.subheader(
+      f"⚡ Bloco {j['bloco_atual']} (Simulação de 3 a 4 Temporadas)"
   )
-  fase_boa = col_b.checkbox(
-      "Fase iluminada (Artilheiro/Destaque)?",
-      value=True,
-      help="Aumenta as chances de gols e títulos.",
+  st.markdown(
+      "Clique abaixo para simular este ciclo de desempenho e ver o que"
+      " aconteceu em campo!"
   )
 
-  if st.button("▶️ Jogar Temporada"):
-    fator = 1.2 if fase_boa else 0.8
-    if com_lesao:
-      fator *= 0.75
+  if st.button("▶️ Simular Próximas Temporadas"):
+    # Define aleatoriamente se o bloco terá 3 ou 4 temporadas
+    qtd_temporadas = random.choice([3, 4])
 
-    if "Centroavante" in j["posicao"]:
-      jogos = int(random.randint(45, 60) * (0.9 if com_lesao else 1.0))
-      gols = int(random.randint(15, 35) * fator)
-      assists = int(random.randint(3, 10) * fator)
-    elif "Ponta" in j["posicao"]:
-      jogos = int(random.randint(45, 60) * (0.9 if com_lesao else 1.0))
-      gols = int(random.randint(10, 22) * fator)
-      assists = int(random.randint(10, 20) * fator)
-    elif "Meia" in j["posicao"]:
-      jogos = int(random.randint(48, 62) * (0.9 if com_lesao else 1.0))
-      gols = int(random.randint(5, 14) * fator)
-      assists = int(random.randint(15, 28) * fator)
-    else:
-      jogos = int(random.randint(45, 60) * (0.9 if com_lesao else 1.0))
-      gols = int(random.randint(1, 6) * fator)
-      assists = int(random.randint(2, 8) * fator)
+    jogos_bloco = 0
+    gols_bloco = 0
+    assists_bloco = 0
+    titulos_bloco = []
 
-    titulos_ano = 0
-    if random.random() < (0.5 if fase_boa else 0.2):
-      titulos_ano = random.randint(1, 3)
+    # Possíveis títulos baseados no clube
+    opcoes_titulos = [
+        "Campeonato Nacional",
+        "Copa Nacional",
+        "Supercopa",
+        "Libertadores / Champions League",
+    ]
 
-    j["total_jogos"] += jogos
-    j["total_gols"] += gols
-    j["total_assistencias"] += assists
-    j["total_titulos"] += titulos_ano
+    for t in range(qtd_temporadas):
+      # Gera estatísticas por temporada com base na posição
+      if "Centroavante" in j["posicao"]:
+        j_temp = random.randint(45, 55)
+        g_temp = random.randint(18, 35)
+        a_temp = random.randint(3, 9)
+      elif "Ponta" in j["posicao"]:
+        j_temp = random.randint(45, 55)
+        g_temp = random.randint(12, 24)
+        a_temp = random.randint(10, 20)
+      elif "Meia" in j["posicao"]:
+        j_temp = random.randint(48, 58)
+        g_temp = random.randint(6, 15)
+        a_temp = random.randint(15, 28)
+      else:
+        j_temp = random.randint(45, 55)
+        g_temp = random.randint(1, 6)
+        a_temp = random.randint(3, 9)
 
-    st.session_state.historico.insert(
+      jogos_bloco += j_temp
+      gols_bloco += g_temp
+      assists_bloco += a_temp
+
+      # Chance de ganhar título no ano (clubes maiores têm mais chance)
+      if (
+          clube_atual
+          in ["Real Madrid", "Manchester City", "Bayern de Munique", "Flamengo"]
+          and random.random() < 0.65
+      ):
+        conquista = random.choice(opcoes_titulos)
+        titulos_bloco.append(conquista)
+      elif random.random() < 0.35:
+        conquista = random.choice(
+            ["Campeonato Estadual / Regional", "Copa Nacional"]
+        )
+        titulos_bloco.append(conquista)
+
+    # Atualiza totais gerais
+    j["total_jogos"] += jogos_bloco
+    j["total_gols"] += gols_bloco
+    j["total_assistencias"] += assists_bloco
+    j["lista_titulos"].extend(titulos_bloco)
+    j["idade"] += qtd_temporadas
+
+    # Salva resumo do bloco no histórico
+    st.session_state.historico_blocos.insert(
         0,
         {
-            "temporada": j["tempor_atual"],
-            "idade": j["idade"],
-            "clube": j["clube"],
-            "jogos": jogos,
-            "gols": gols,
-            "assists": assists,
-            "titulos": titulos_ano,
+            "bloco": j["bloco_atual"],
+            "clube": clube_atual,
+            "temporadas": qtd_temporadas,
+            "jogos": jogos_bloco,
+            "gols": gols_bloco,
+            "assists": assists_bloco,
+            "titulos": titulos_bloco,
         },
     )
 
-    j["idade"] += 1
-    j["tempor_atual"] += 1
+    j["bloco_atual"] += 1
 
-    if j["tempor_atual"] % 3 == 0:
-      j["clube"] = random.choice([c for c in CLUBES if c != j["clube"]])
-      st.toast(
-          f"Mercado da bola: {j['nome']} transferiu-se para o {j['clube']}!",
-          icon="🚨",
-      )
-
-    if j["tempor_atual"] > 15 or j["idade"] >= 38:
+    # Se passou dos 38 anos, vai para a aposentadoria
+    if j["idade"] >= 38 or j["bloco_atual"] > 5:
       st.session_state.etapa = "fim"
+    else:
+      st.session_state.etapa = "transferencia"
 
     st.rerun()
 
-  if st.button("🔄 Reiniciar Carreira"):
-    st.session_state.etapa = "criacao"
-    st.session_state.jogador = {}
-    st.session_state.historico = []
-    st.rerun()
-
-  if st.session_state.historico:
+  # Histórico dos blocos anteriores
+  if st.session_state.historico_blocos:
     st.markdown("---")
-    st.subheader("📜 Desempenho por Temporada")
-    for h in st.session_state.historico:
+    st.subheader("📜 Histórico de Ciclos Anteriores")
+    for h in st.session_state.historico_blocos:
+      titulos_str = ", ".join(h["titulos"]) if h["titulos"] else "Nenhum título"
       st.write(
-          f"**Temporada {h['temporada']} ({h['idade']} anos) - {h['clube']}**"
-          f" ➡ Jogos: **{h['jogos']}** | Gols: **{h['gols']}** | Assistências:"
-          f" **{h['assists']}** | Títulos: **{h['titulos']}**"
+          f"**{h['clube']}** ({h['temporadas']} temporadas) ➡ Jogos:"
+          f" **{h['jogos']}** | Gols: **{h['gols']}** | Assistências:"
+          f" **{h['assists']}** | Títulos: *{titulos_str}*"
       )
 
 # ==========================================
-# TELA 3: APOSENTADORIA / ESTATÍSTICAS FINAIS
+# TELA 3: DECISÃO DE TRANSFERÊNCIA
 # ==========================================
-elif st.session_state.etapa == "fim":
+elif st.session_state.etapa == "transferencia":
   j = st.session_state.jogador
-  st.title("🏆 Fim da Carreira - Relatório Estatístico")
+  ultimo_bloco = st.session_state.historico_blocos[0]
 
+  st.title("🔄 Janela de Transferências")
   st.success(
-      f"{j['nome']} pendurou as chuteiras após uma jornada marcante nos"
-      " gramados!"
+      f"Você concluiu mais um ciclo de {ultimo_bloco['temporadas']} temporadas"
+      f" no **{ultimo_bloco['clube']}**!"
   )
 
   st.markdown(
       f"""
-    ### 📈 Números Finais da Carreira
+    ### 📈 Desempenho no último ciclo:
+    * **Partidas:** {ultimo_bloco['jogos']} | **Gols:** {ultimo_bloco['gols']}"
+      " | **Assistências:** {ultimo_bloco['assists']}
+    * **Títulos conquistados:**"
+      f" {', '.join(ultimo_bloco['titulos']) if ultimo_bloco['titulos'] else 'Nenhum'}"
+  """
+  )
+
+  st.markdown("---")
+  st.subheader("O que você deseja fazer para a próxima fase?")
+
+  # Sorteia 2 times aleatórios diferentes do atual para propostas
+  outros_times = [c for c in CLUBES_INFO.keys() if c != j["clube"]]
+  propostas = random.sample(outros_times, 2)
+
+  opcao_escolha = st.radio(
+      "Escolha seu destino:",
+      ["Continuar no clube atual (" + j["clube"] + ")"]
+      + [f"Aceitar proposta do {p}" for p in propostas],
+  )
+
+  if st.button("Confirmar Destino e Continuar Carreira"):
+    if "Continuar" not in opcao_escolha:
+      # Extrai o nome do clube escolhido
+      novo_clube = opcao_escolha.replace("Aceitar proposta do ", "").strip()
+      j["clube"] = novo_clube
+      st.toast(
+          f"Transferência concretizada! Você agora é jogador do {novo_clube}.",
+          icon="🚨",
+      )
+
+    st.session_state.etapa = "simulacao"
+    st.rerun()
+
+# ==========================================
+# TELA 4: APOSENTADORIA / RELATÓRIO FINAL
+# ==========================================
+elif st.session_state.etapa == "fim":
+  j = st.session_state.jogador
+  st.title("🏆 Fim da Carreira - Relatório Oficial")
+
+  st.success(
+      f"{j['nome']} pendurou as chuteiras aos {j['idade']} anos de idade!"
+  )
+
+  # Conta a quantidade de cada título
+  contagem_titulos = {}
+  for tit in j["lista_titulos"]:
+    contagem_titulos[tit] = contagem_titulos.get(tit, 0) + 1
+
+  texto_titulos_formatado = ""
+  if contagem_titulos:
+    for t, qtd in contagem_titulos.items():
+      texto_titulos_formatado += f"* **{qtd}x** {t}\n"
+  else:
+    texto_titulos_formatado = "* Nenhum título de expressão conquistado.\n"
+
+  st.markdown(
+      f"""
+    ### 📊 Resumo Definitivo da Carreira
     * **Partidas Totais:** {j['total_jogos']}
     * **Gols Marcados:** {j['total_gols']}
     * **Assistências:** {j['total_assistencias']}
     * **Participações em Gols:** {j['total_gols'] + j['total_assistencias']}
-    * **Títulos Conquistados:** {j['total_titulos']}
+
+    ### 🥇 Galeria de Títulos Conquistados ({len(j['lista_titulos'])} no total):
+    {texto_titulos_formatado}
     """
   )
 
   if st.button("🔄 Iniciar Nova Carreira"):
     st.session_state.etapa = "criacao"
     st.session_state.jogador = {}
-    st.session_state.historico = []
+    st.session_state.historico_blocos = []
     st.rerun()
