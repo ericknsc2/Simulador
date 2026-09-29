@@ -86,6 +86,9 @@ if "jogador" not in st.session_state or not st.session_state.jogador:
 if "historico_blocos" not in st.session_state:
   st.session_state.historico_blocos = []
 
+if "propostas_atuais" not in st.session_state:
+  st.session_state.propostas_atuais = []
+
 # ==========================================
 # TELA 1: CRIAÇÃO DO JOGADOR
 # ==========================================
@@ -143,7 +146,6 @@ elif st.session_state.etapa == "simulacao":
       {"pais": "Desconhecido", "escudo": "https://via.placeholder.com/120"},
   )
 
-  # Cabeçalho com Escudo
   col_img, col_txt = st.columns([1, 4])
   with col_img:
     st.image(info["escudo"], width=90)
@@ -154,7 +156,6 @@ elif st.session_state.etapa == "simulacao":
         f" ({info['pais']}) &nbsp;|&nbsp; **Idade:** {j['idade']} anos"
     )
 
-  # Painel de Estatísticas Acumuladas
   st.markdown("<div class='stats-box'>", unsafe_allow_html=True)
   st.markdown("### 📊 Totais na Carreira Até o Momento")
   c1, c2, c3, c4 = st.columns(4)
@@ -173,7 +174,6 @@ elif st.session_state.etapa == "simulacao":
   )
 
   if st.button("▶️ Simular Próximas Temporadas"):
-    # Define aleatoriamente se o bloco terá 3 ou 4 temporadas
     qtd_temporadas = random.choice([3, 4])
 
     jogos_bloco = 0
@@ -181,7 +181,6 @@ elif st.session_state.etapa == "simulacao":
     assists_bloco = 0
     titulos_bloco = []
 
-    # Possíveis títulos baseados no clube
     opcoes_titulos = [
         "Campeonato Nacional",
         "Copa Nacional",
@@ -190,7 +189,6 @@ elif st.session_state.etapa == "simulacao":
     ]
 
     for t in range(qtd_temporadas):
-      # Gera estatísticas por temporada com base na posição
       if "Centroavante" in j["posicao"]:
         j_temp = random.randint(45, 55)
         g_temp = random.randint(18, 35)
@@ -212,7 +210,6 @@ elif st.session_state.etapa == "simulacao":
       gols_bloco += g_temp
       assists_bloco += a_temp
 
-      # Chance de ganhar título no ano (clubes maiores têm mais chance)
       if (
           clube_atual
           in ["Real Madrid", "Manchester City", "Bayern de Munique", "Flamengo"]
@@ -226,14 +223,12 @@ elif st.session_state.etapa == "simulacao":
         )
         titulos_bloco.append(conquista)
 
-    # Atualiza totais gerais
     j["total_jogos"] += jogos_bloco
     j["total_gols"] += gols_bloco
     j["total_assistencias"] += assists_bloco
     j["lista_titulos"].extend(titulos_bloco)
     j["idade"] += qtd_temporadas
 
-    # Salva resumo do bloco no histórico
     st.session_state.historico_blocos.insert(
         0,
         {
@@ -249,7 +244,10 @@ elif st.session_state.etapa == "simulacao":
 
     j["bloco_atual"] += 1
 
-    # Se passou dos 38 anos, vai para a aposentadoria
+    # Prepara as propostas para a tela seguinte
+    outros_times = [c for c in CLUBES_INFO.keys() if c != j["clube"]]
+    st.session_state.propostas_atuais = random.sample(outros_times, 2)
+
     if j["idade"] >= 38 or j["bloco_atual"] > 5:
       st.session_state.etapa = "fim"
     else:
@@ -257,7 +255,6 @@ elif st.session_state.etapa == "simulacao":
 
     st.rerun()
 
-  # Histórico dos blocos anteriores
   if st.session_state.historico_blocos:
     st.markdown("---")
     st.subheader("📜 Histórico de Ciclos Anteriores")
@@ -285,38 +282,29 @@ elif st.session_state.etapa == "transferencia":
   st.markdown(
       f"""
     ### 📈 Desempenho no último ciclo:
-    * **Partidas:** {ultimo_bloco['jogos']} | **Gols:** {ultimo_bloco['gols']}"
-      " | **Assistências:** {ultimo_bloco['assists']}
-    * **Títulos conquistados:**"
-      f" {', '.join(ultimo_bloco['titulos']) if ultimo_bloco['titulos'] else 'Nenhum'}"
-  """
+    * **Partidas:** {ultimo_bloco['jogos']} | **Gols:** {ultimo_bloco['gols']} | **Assistências:** {ultimo_bloco['assists']}
+    * **Títulos conquistados:** {', '.join(ultimo_bloco['titulos']) if ultimo_bloco['titulos'] else 'Nenhum'}
+    """
   )
 
   st.markdown("---")
   st.subheader("O que você deseja fazer para a próxima fase?")
 
-  # Sorteia 2 times aleatórios diferentes do atual para propostas
-  outros_times = [c for c in CLUBES_INFO.keys() if c != j["clube"]]
-  propostas = random.sample(outros_times, 2)
+  opcoes = [f"Continuar no clube atual ({j['clube']})"] + [
+      f"Aceitar proposta do {p}" for p in st.session_state.propostas_atuais
+  ]
 
-  opcao_escolha = st.radio(
-      "Escolha seu destino:",
-      ["Continuar no clube atual (" + j["clube"] + ")"]
-      + [f"Aceitar proposta do {p}" for p in propostas],
-  )
+  with st.form("form_transferencia"):
+    escolha_usuario = st.radio("Escolha seu destino:", opcoes)
+    confirmar = st.form_submit_button("Confirmar Destino e Continuar Carreira")
 
-  if st.button("Confirmar Destino e Continuar Carreira"):
-    if "Continuar" not in opcao_escolha:
-      # Extrai o nome do clube escolhido
-      novo_clube = opcao_escolha.replace("Aceitar proposta do ", "").strip()
-      j["clube"] = novo_clube
-      st.toast(
-          f"Transferência concretizada! Você agora é jogador do {novo_clube}.",
-          icon="🚨",
-      )
-
-    st.session_state.etapa = "simulacao"
-    st.rerun()
+    if confirmar:
+      if "Continuar" not in escolha_usuario:
+        novo_clube = escolha_usuario.replace("Aceitar proposta do ", "").strip()
+        j["clube"] = novo_clube
+      
+      st.session_state.etapa = "simulacao"
+      st.rerun()
 
 # ==========================================
 # TELA 4: APOSENTADORIA / RELATÓRIO FINAL
@@ -329,7 +317,6 @@ elif st.session_state.etapa == "fim":
       f"{j['nome']} pendurou as chuteiras aos {j['idade']} anos de idade!"
   )
 
-  # Conta a quantidade de cada título
   contagem_titulos = {}
   for tit in j["lista_titulos"]:
     contagem_titulos[tit] = contagem_titulos.get(tit, 0) + 1
@@ -354,6 +341,12 @@ elif st.session_state.etapa == "fim":
     """
   )
 
+  if st.button("🔄 Iniciar Nova Carreira"):
+    st.session_state.etapa = "criacao"
+    st.session_state.jogador = {}
+    st.session_state.historico_blocos = []
+    st.session_state.propostas_atuais = []
+    st.rerun()
   if st.button("🔄 Iniciar Nova Carreira"):
     st.session_state.etapa = "criacao"
     st.session_state.jogador = {}
