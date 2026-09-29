@@ -34,15 +34,26 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- INICIALIZAÇÃO DO ESTADO ---
+# --- INICIALIZAÇÃO SEGURA DO ESTADO ---
 if "etapa" not in st.session_state:
   st.session_state.etapa = "criacao"
-if "jogador" not in st.session_state:
-  st.session_state.jogador = {}
+
+if "jogador" not in st.session_state or not st.session_state.jogador:
+  st.session_state.jogador = {
+      "nome": "Erick",
+      "posicao": "Centroavante (Atacante)",
+      "clube": "Fluminense (Brasil)",
+      "idade": 18,
+      "tempor_atual": 1,
+      "total_jogos": 0,
+      "total_gols": 0,
+      "total_assistencias": 0,
+      "total_titulos": 0,
+  }
+
 if "historico" not in st.session_state:
   st.session_state.historico = []
 
-# --- CLUBES POR PAÍS/NÍVEL ---
 CLUBES = [
     "Fluminense (Brasil)",
     "Flamengo (Brasil)",
@@ -89,7 +100,7 @@ if st.session_state.etapa == "criacao":
             "posicao": posicao,
             "clube": clube_atual,
             "idade": 18,
-            "temporada_atual": 1,
+            "tempor_atual": 1,
             "total_jogos": 0,
             "total_gols": 0,
             "total_assistencias": 0,
@@ -136,7 +147,6 @@ elif st.session_state.etapa == "simulacao":
   )
 
   if st.button("▶️ Jogar Temporada"):
-    # Geração de números baseada na posição e nas opções
     fator = 1.2 if fase_boa else 0.8
     if com_lesao:
       fator *= 0.75
@@ -153,23 +163,20 @@ elif st.session_state.etapa == "simulacao":
       jogos = int(random.randint(48, 62) * (0.9 if com_lesao else 1.0))
       gols = int(random.randint(5, 14) * fator)
       assists = int(random.randint(15, 28) * fator)
-    else:  # Defensores
+    else:
       jogos = int(random.randint(45, 60) * (0.9 if com_lesao else 1.0))
       gols = int(random.randint(1, 6) * fator)
       assists = int(random.randint(2, 8) * fator)
 
-    # Chances de títulos no ano
     titulos_ano = 0
     if random.random() < (0.5 if fase_boa else 0.2):
       titulos_ano = random.randint(1, 3)
 
-    # Atualiza totais
     j["total_jogos"] += jogos
     j["total_gols"] += gols
     j["total_assistencias"] += assists
     j["total_titulos"] += titulos_ano
 
-    # Salva no histórico da temporada
     st.session_state.historico.insert(
         0,
         {
@@ -183,11 +190,9 @@ elif st.session_state.etapa == "simulacao":
         },
     )
 
-    # Avança idade e temporada
     j["idade"] += 1
     j["tempor_atual"] += 1
 
-    # Possibilidade de trocar de clube a cada 3 anos
     if j["tempor_atual"] % 3 == 0:
       j["clube"] = random.choice([c for c in CLUBES if c != j["clube"]])
       st.toast(
@@ -200,14 +205,19 @@ elif st.session_state.etapa == "simulacao":
 
     st.rerun()
 
-  # Exibe o Histórico Temporada a Temporada
+  if st.button("🔄 Reiniciar Carreira"):
+    st.session_state.etapa = "criacao"
+    st.session_state.jogador = {}
+    st.session_state.historico = []
+    st.rerun()
+
   if st.session_state.historico:
     st.markdown("---")
     st.subheader("📜 Desempenho por Temporada")
     for h in st.session_state.historico:
       st.write(
           f"**Temporada {h['temporada']} ({h['idade']} anos) - {h['clube']}**"
-          f" ➡️️ Jogos: **{h['jogos']}** | Gols: **{h['gols']}** | Assistências:"
+          f" ➡ Jogos: **{h['jogos']}** | Gols: **{h['gols']}** | Assistências:"
           f" **{h['assists']}** | Títulos: **{h['titulos']}**"
       )
 
@@ -235,6 +245,7 @@ elif st.session_state.etapa == "fim":
   )
 
   if st.button("🔄 Iniciar Nova Carreira"):
-    for key in list(st.session_state.keys()):
-      del st.session_state.key
+    st.session_state.etapa = "criacao"
+    st.session_state.jogador = {}
+    st.session_state.historico = []
     st.rerun()
